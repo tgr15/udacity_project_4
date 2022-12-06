@@ -86,13 +86,13 @@ def index():
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
         # use tracer object to trace cat vote
-        tracer.span(name="GetCatVotes")
-        tele_client.track_event("GetCatVotes")
+        tracer.span("GetCatVotes")
+        tele_client.track_event('GetCatVotes1')
         tele_client.flush()
         vote2 = r.get(button2).decode('utf-8')
         # use tracer object to trace dog vote
-        tracer.span(name="GetDogVotes")
-        tele_client.track_event("GetDogVotes")
+        tracer.span("GetDogVotes")
+        tele_client.track_event('GetDogVotes1')
         tele_client.flush()
 
         # Return index with values
