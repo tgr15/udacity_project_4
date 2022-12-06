@@ -99,6 +99,8 @@ def index():
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
     elif request.method == 'POST':
+        tele_client.track_event('GetCatVotes1')
+        tele_client.flush()
 
         if request.form['vote'] == 'reset':
 
