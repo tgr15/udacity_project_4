@@ -10,44 +10,35 @@ from datetime import datetime
 # App Insights
 # Import required libraries for App Insights
 from opencensus.ext.azure.log_exporter import AzureLogHandler
-from opencensus.ext.azure.log_exporter import AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
 from opencensus.stats import aggregation as aggregation_module
 from opencensus.stats import measure as measure_module
 from opencensus.stats import stats as stats_module
 from opencensus.stats import view as view_module
 from opencensus.tags import tag_map as tag_map_module
-from opencensus.trace import config_integration
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
-
-# For metrics
-stats = stats_module.stats
-view_manager = stats.view_manager
-# For logging
-config_integration.trace_integrations(['logging'])
-config_integration.trace_integrations(['requests'])
+from applicationinsights import TelemetryClient
 
 # Logging
 logger = logging.getLogger(__name__)
 # Handler for logs
 logger.addHandler(AzureLogHandler(
     connection_string='InstrumentationKey=6c269e7c-0a79-4c00-96bb-fd19c9c4f1ff'))
-# Handler for events
-logger.addHandler(AzureEventHandler(connection_string='InstrumentationKey=6c269e7c-0a79-4c00-96bb-fd19c9c4f1ff'))
 # Set the logging level
 logger.setLevel(logging.INFO)
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
     enable_standard_metrics=True, connection_string='InstrumentationKey=6c269e7c-0a79-4c00-96bb-fd19c9c4f1ff')
-view_manager.register_exporter(exporter)
 
 # Tracing
 tracer = Tracer(exporter=AzureExporter(
     connection_string='InstrumentationKey=6c269e7c-0a79-4c00-96bb-fd19c9c4f1ff'), sampler=ProbabilitySampler(1.0))
+# Creating a telemetric client to trace events
+tele_client = TelemetryClient('6c269e7c-0a79-4c00-96bb-fd19c9c4f1ff')
 
 app = Flask(__name__)
 
@@ -96,9 +87,13 @@ def index():
         vote1 = r.get(button1).decode('utf-8')
         # use tracer object to trace cat vote
         tracer.span(name="GetCatVotes")
+        tele_client.track_event("GetCatVotes")
+        tele_client.flush()
         vote2 = r.get(button2).decode('utf-8')
         # use tracer object to trace dog vote
         tracer.span(name="GetDogVotes")
+        tele_client.track_event("GetDogVotes")
+        tele_client.flush()
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
