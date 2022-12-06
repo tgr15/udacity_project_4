@@ -86,12 +86,12 @@ def index():
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
         # use tracer object to trace cat vote
-        tracer.span("GetCatVotes")
+        tracer.span(name="GetCatVotes")
         tele_client.track_event("GetCatVotes")
         tele_client.flush()
         vote2 = r.get(button2).decode('utf-8')
         # use tracer object to trace dog vote
-        tracer.span("GetDogVotes")
+        tracer.span(name="GetDogVotes")
         tele_client.track_event("GetDogVotes")
         tele_client.flush()
 
@@ -122,9 +122,6 @@ def index():
             # Insert vote result into DB
             vote = request.form['vote']
             r.incr(vote, 1)
-            tracer.span("GetCatVotes")
-            tele_client.track_event("GetCatVotes")
-            tele_client.flush()
 
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
