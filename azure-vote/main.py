@@ -88,21 +88,19 @@ def index():
         # use tracer object to trace cat vote
         with tracer.span(name="GetCatVotes") as span:
             print("Cats Vote")
-        tele_client.track_event('GetCatVotes1')
+        tele_client.track_event('GetCatVotes')
         tele_client.flush()
         vote2 = r.get(button2).decode('utf-8')
         # use tracer object to trace dog vote
         with tracer.span("GetDogVotes") as span:
             print("Dogs vote")
-        tele_client.track_event('GetDogVotes1')
+        tele_client.track_event('GetDogVotes')
         tele_client.flush()
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
     elif request.method == 'POST':
-        tele_client.track_event('GetCatVotes1')
-        tele_client.flush()
 
         if request.form['vote'] == 'reset':
 
